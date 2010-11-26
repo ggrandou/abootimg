@@ -1,0 +1,8 @@
+#!/bin/sh
+#
+
+initrd=${1:-initrd.img}
+ramdisk=${2:-ramdisk}
+
+( cd $ramdisk; find | sort | cpio --quiet -o -H newc ) | gzip > $initrd
+
