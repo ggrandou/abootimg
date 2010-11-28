@@ -22,6 +22,7 @@
 #include <string.h>
 #include <errno.h>
 #include <stdarg.h>
+#include <fcntl.h>
 #include <sys/stat.h>
 #include <sys/ioctl.h>
 #include <linux/fs.h>
@@ -267,9 +268,21 @@ void check_if_block_device(t_abootimg* img)
 #ifdef HAS_BLKID
   if (S_ISBLK(st.st_mode)) {
     img->is_blkdev = 1;
+
     char* type = blkid_get_tag_value(NULL, "TYPE", img->fname);
     if (type)
       abort_printf("%s: refuse to write on a valid partition type (%s)\n", img->fname, type);
+
+    int fd = open(img->fname, O_RDONLY);
+    if (fd == -1)
+      abort_perror(img->fname);
+    
+    unsigned long long bsize = 0;
+    if (ioctl(fd, BLKGETSIZE64, &bsize))
+      abort_perror(img->fname);
+    img->size = bsize;
+
+    close(fd);
   }
 #endif
 }
