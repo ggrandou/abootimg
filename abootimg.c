@@ -576,6 +576,12 @@ void write_bootimg(t_abootimg* img)
   if (!padding)
     abort_perror("");
 
+  unsigned n = (img->header.kernel_size + psize - 1) / psize;
+  unsigned m = (img->header.ramdisk_size + psize - 1) / psize;
+  unsigned o = (img->header.second_size + psize - 1) / psize;
+  unsigned total_pages = 1+n+m+o;
+  unsigned bootimg_pages = img->size/psize;
+
   if (fseek(img->stream, 0, SEEK_SET))
     abort_perror(img->fname);
 
@@ -588,23 +594,32 @@ void write_bootimg(t_abootimg* img)
     abort_perror(img->fname);
 
   if (img->kernel) {
-  fwrite(img->kernel, 1, img->header.kernel_size, img->stream);
-  if (ferror(img->stream))
-    abort_perror(img->fname);
+    fwrite(img->kernel, 1, img->header.kernel_size, img->stream);
+    if (ferror(img->stream))
+      abort_perror(img->fname);
 
-  fwrite(padding, 1, psize - (img->header.kernel_size % psize), img->stream);
-  if (ferror(img->stream))
-    abort_perror(img->fname);
+    fwrite(padding, 1, psize - (img->header.kernel_size % psize), img->stream);
+    if (ferror(img->stream))
+      abort_perror(img->fname);
+  }
 
-  fwrite(img->ramdisk, 1, img->header.ramdisk_size, img->stream);
-  if (ferror(img->stream))
-    abort_perror(img->fname);
+  if (img->ramdisk) {
+    if (fseek(img->stream, (1+n)*psize, SEEK_SET))
+      abort_perror(img->fname);
 
-  fwrite(padding, 1, psize - (img->header.ramdisk_size % psize), img->stream);
-  if (ferror(img->stream))
-    abort_perror(img->fname);
+    fwrite(img->ramdisk, 1, img->header.ramdisk_size, img->stream);
+    if (ferror(img->stream))
+      abort_perror(img->fname);
+
+    fwrite(padding, 1, psize - (img->header.ramdisk_size % psize), img->stream);
+    if (ferror(img->stream))
+      abort_perror(img->fname);
+  }
 
   if (img->header.second_size) {
+    if (fseek(img->stream, (1+n+m)*psize, SEEK_SET))
+      abort_perror(img->fname);
+
     fwrite(img->second, 1, img->header.second_size, img->stream);
     if (ferror(img->stream))
       abort_perror(img->fname);
@@ -613,13 +628,6 @@ void write_bootimg(t_abootimg* img)
     if (ferror(img->stream))
       abort_perror(img->fname);
   }
-  }
-
-  unsigned n = (img->header.kernel_size + psize - 1) / psize;
-  unsigned m = (img->header.ramdisk_size + psize - 1) / psize;
-  unsigned o = (img->header.second_size + psize - 1) / psize;
-  unsigned total_pages = 1+n+m+o;
-  unsigned bootimg_pages = img->size/psize;
 
   ftruncate (fileno(img->stream), img->size);
 
