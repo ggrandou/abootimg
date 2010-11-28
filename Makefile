@@ -8,6 +8,6 @@ clean:
 	rm -f abootimg abootimg-static
 
 archive: clean
-	cd ..; tar cvzf abootimg.tar.gz abootimg --exclude tests --exclude tmp
+	cd ..; tar cvzf abootimg.tar.gz abootimg --exclude tests --exclude tmp\* --exclude .git
 
 
