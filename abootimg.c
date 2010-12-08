@@ -447,6 +447,18 @@ void update_header(t_abootimg* img)
 
 void update_images(t_abootimg *img)
 {
+  unsigned page_size = img->header.page_size;
+  unsigned ksize = img->header.kernel_size;
+  unsigned rsize = img->header.ramdisk_size;
+  unsigned ssize = img->header.second_size;
+
+  unsigned n = (ksize + page_size - 1) / page_size;
+  unsigned m = (rsize + page_size - 1) / page_size;
+  unsigned o = (ssize + page_size - 1) / page_size;
+
+  unsigned roffset = (1+n)*page_size;
+  unsigned soffset = (1+n+m)*page_size;
+
   if (img->kernel_fname) {
     printf("reading kernel from %s\n", img->kernel_fname);
     FILE* stream = fopen(img->kernel_fname, "r");
@@ -455,7 +467,7 @@ void update_images(t_abootimg *img)
     struct stat st;
     if (fstat(fileno(stream), &st))
       abort_perror(img->kernel_fname);
-    unsigned ksize = st.st_size;
+    ksize = st.st_size;
     char* k = malloc(ksize);
     if (!k)
       abort_perror("");
@@ -477,7 +489,7 @@ void update_images(t_abootimg *img)
     struct stat st;
     if (fstat(fileno(stream), &st))
       abort_perror(img->ramdisk_fname);
-    unsigned rsize = st.st_size;
+    rsize = st.st_size;
     char* r = malloc(rsize);
     if (!r)
       abort_perror("");
@@ -492,13 +504,9 @@ void update_images(t_abootimg *img)
   }
   else if (img->kernel) {
     // if kernel is updated, copy the ramdisk from original image
-    char* r = malloc(img->header.ramdisk_size);
+    char* r = malloc(rsize);
     if (!r)
       abort_perror("");
-    unsigned page_size = img->header.page_size;
-    unsigned n = (img->header.kernel_size + page_size - 1) / page_size;
-    unsigned roffset = (1+n)*page_size;
-    unsigned rsize = img->header.ramdisk_size;
     if (fseek(img->stream, roffset, SEEK_SET))
       abort_perror(img->fname);
     fread(r, 1, rsize, img->stream);
@@ -517,7 +525,7 @@ void update_images(t_abootimg *img)
     struct stat st;
     if (fstat(fileno(stream), &st))
       abort_perror(img->second_fname);
-    unsigned ssize = st.st_size;
+    ssize = st.st_size;
     char* s = malloc(ssize);
     if (!s)
       abort_perror("");
@@ -532,14 +540,9 @@ void update_images(t_abootimg *img)
   }
   else if (img->ramdisk && img->header.second_size) {
     // if ramdisk is updated, copy the second stage from original image
-    char* s = malloc(img->header.second_size);
+    char* s = malloc(ssize);
     if (!s)
       abort_perror("");
-    unsigned page_size = img->header.page_size;
-    unsigned n = (img->header.kernel_size + page_size - 1) / page_size;
-    unsigned m = (img->header.ramdisk_size + page_size - 1) / page_size;
-    unsigned soffset = (1+n+m)*page_size;
-    unsigned ssize = img->header.second_size;
     if (fseek(img->stream, soffset, SEEK_SET))
       abort_perror(img->fname);
     fread(s, 1, ssize, img->stream);
@@ -550,10 +553,9 @@ void update_images(t_abootimg *img)
     img->second = s;
   }
 
-  unsigned page_size = img->header.page_size;
-  unsigned n = (img->header.kernel_size + page_size - 1) / page_size;
-  unsigned m = (img->header.ramdisk_size + page_size - 1) / page_size;
-  unsigned o = (img->header.second_size + page_size - 1) / page_size;
+  n = (img->header.kernel_size + page_size - 1) / page_size;
+  m = (img->header.ramdisk_size + page_size - 1) / page_size;
+  o = (img->header.second_size + page_size - 1) / page_size;
   unsigned total_size = (1+n+m+o)*page_size;
 
   if (!img->size)
