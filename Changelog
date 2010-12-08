@@ -1,3 +1,7 @@
+2010/12/08 - v0.3
+
+	* fix when updating kernel without ramdisk
+
 2010/11/28 - v0.2
 
 	* fix when updating ramdisk without the kernel
