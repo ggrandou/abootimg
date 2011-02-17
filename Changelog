@@ -1,3 +1,7 @@
+2011/02/17 - v0.4
+
+	* fix when page_size is null
+
 2010/12/08 - v0.3
 
 	* fix when updating kernel without ramdisk
