@@ -241,6 +241,9 @@ int check_boot_img_header(t_abootimg* img)
     return 1;
 
   unsigned page_size = img->header.page_size;
+  if (!page_size)
+    abort_printf("%s: Image page size is null\n", img->fname);
+
   unsigned n = (img->header.kernel_size + page_size - 1) / page_size;
   unsigned m = (img->header.ramdisk_size + page_size - 1) / page_size;
   unsigned o = (img->header.second_size + page_size - 1) / page_size;
@@ -451,6 +454,9 @@ void update_images(t_abootimg *img)
   unsigned ksize = img->header.kernel_size;
   unsigned rsize = img->header.ramdisk_size;
   unsigned ssize = img->header.second_size;
+
+  if (!page_size)
+    abort_printf("%s: Image page size is null\n", img->fname);
 
   unsigned n = (ksize + page_size - 1) / page_size;
   unsigned m = (rsize + page_size - 1) / page_size;
@@ -825,6 +831,7 @@ t_abootimg* new_bootimg()
   img->second_fname = "stage2.img";
 
   memcpy(img->header.magic, BOOT_MAGIC, BOOT_MAGIC_SIZE);
+  img->header.page_size = 2048;  // a sensible default page size
 
   return img;
 }
