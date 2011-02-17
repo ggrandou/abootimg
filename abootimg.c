@@ -412,7 +412,7 @@ void update_header(t_abootimg* img)
     printf("reading config file %s\n", img->config_fname);
 
     char* line = NULL;
-    unsigned len = 0;
+    size_t len = 0;
     int read;
 
     while ((read = getline(&line, &len, config_file)) != -1) {
@@ -433,7 +433,7 @@ void update_header(t_abootimg* img)
     printf("reading config args\n");
 
     char* line = NULL;
-    unsigned len = 0;
+    size_t len = 0;
     int read;
 
     while ((read = getline(&line, &len, config_file)) != -1) {
