@@ -4,5 +4,15 @@
 initrd=${1:-initrd.img}
 ramdisk=${2:-ramdisk}
 
+if [ ! -d $ramdisk ]; then
+    echo "$ramdisk does not exist."
+    exit 1
+fi
+
+if [ -f $initrd ]; then
+    echo "$initrd already exist."
+    exit 1
+fi
+
 ( cd $ramdisk; find | sort | cpio --quiet -o -H newc ) | gzip > $initrd
 
