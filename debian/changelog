@@ -1,0 +1,5 @@
+abootimg (0.3-1) unstable; urgency=low
+
+  * Initial release (Closes: #612096)
+
+ -- Heiko Stuebner <mmind@debian.org>  Sat, 12 Feb 2011 12:04:10 +0100
