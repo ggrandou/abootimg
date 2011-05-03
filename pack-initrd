@@ -1,6 +1,11 @@
 #!/bin/sh
 #
 
+if [ "$1" = "-f" ]; then
+    forcewrite=yes
+    shift
+fi
+
 initrd=${1:-initrd.img}
 ramdisk=${2:-ramdisk}
 
@@ -9,7 +14,7 @@ if [ ! -d $ramdisk ]; then
     exit 1
 fi
 
-if [ -f $initrd ]; then
+if [ -f $initrd -a -z "$forcewrite" ]; then
     echo "$initrd already exist."
     exit 1
 fi
