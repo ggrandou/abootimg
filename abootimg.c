@@ -1,5 +1,5 @@
 /* abootimg -  Manipulate (read, modify, create) Android Boot Images
- * Copyright (c) 2010 Gilles Grandou <gilles@grandou.net>
+ * Copyright (c) 2010-2011 Gilles Grandou <gilles@grandou.net>
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -92,7 +92,7 @@ void print_usage(void)
 {
   printf (
  " abootimg - manipulate Android Boot Images.\n"
- " (c) 2011 Gilles Grandou <gilles@grandou.net>\n"
+ " (c) 2010-2011 Gilles Grandou <gilles@grandou.net>\n"
  " " VERSION_STR "\n"
  "\n"
  " abootimg [-h]\n"
