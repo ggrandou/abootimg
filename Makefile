@@ -11,4 +11,5 @@ clean:
 archive: clean
 	cd ..; tar cvzf abootimg.tar.gz abootimg --exclude tests --exclude tmp\* --exclude .git
 
+.PHONY:	clean archive all
 
