@@ -31,6 +31,7 @@
 #include <blkid/blkid.h>
 #endif
 
+#include "version.h"
 #include "bootimg.h"
 
 
@@ -91,6 +92,8 @@ void print_usage(void)
 {
   printf (
  " abootimg - manipulate Android Boot Images.\n"
+ " (c) 2011 Gilles Grandou <gilles@grandou.net>\n"
+ " " VERSION_STR "\n"
  "\n"
  " abootimg [-h]\n"
  "\n"
