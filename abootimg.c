@@ -269,18 +269,26 @@ enum command parse_args(int argc, char** argv, t_abootimg* img)
 
 int check_boot_img_header(t_abootimg* img)
 {
-  if (strncmp(img->header.magic, BOOT_MAGIC, BOOT_MAGIC_SIZE))
+  if (strncmp(img->header.magic, BOOT_MAGIC, BOOT_MAGIC_SIZE)) {
+    fprintf(stderr, "%s: no Android Magic Value\n", img->fname);
     return 1;
+  }
 
-  if (!(img->header.kernel_size))
+  if (!(img->header.kernel_size)) {
+    fprintf(stderr, "%s: kernel size is null\n", img->fname);
     return 1;
+  }
 
-  if (!(img->header.ramdisk_size))
+  if (!(img->header.ramdisk_size)) {
+    fprintf(stderr, "%s: ramdisk size is null\n", img->fname);
     return 1;
+  }
 
   unsigned page_size = img->header.page_size;
-  if (!page_size)
-    abort_printf("%s: Image page size is null\n", img->fname);
+  if (!page_size) {
+    fprintf(stderr, "%s: Image page size is null\n", img->fname);
+    return 1;
+  }
 
   unsigned n = (img->header.kernel_size + page_size - 1) / page_size;
   unsigned m = (img->header.ramdisk_size + page_size - 1) / page_size;
@@ -288,8 +296,10 @@ int check_boot_img_header(t_abootimg* img)
 
   unsigned total_size = (1+n+m+o)*page_size;
 
-  if (total_size > img->size)
+  if (total_size > img->size) {
+    fprintf(stderr, "%s: sizes mismatches in boot image\n", img->fname);
     return 1;
+  }
 
   return 0;
 }
