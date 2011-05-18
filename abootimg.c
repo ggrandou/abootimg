@@ -24,8 +24,27 @@
 #include <stdarg.h>
 #include <fcntl.h>
 #include <sys/stat.h>
+
+
+#ifdef __linux__
 #include <sys/ioctl.h>
-#include <linux/fs.h>
+#include <linux/fs.h> /* BLKGETSIZE64 */
+#endif
+
+#ifdef __CYGWIN__
+#include <sys/ioctl.h>
+#include <cygwin/fs.h> /* BLKGETSIZE64 */
+#endif
+
+#if defined(__FreeBSD__) || defined(__FreeBSD_kernel__)
+#include <sys/disk.h> /* DIOCGMEDIASIZE */
+#include <sys/sysctl.h>
+#endif
+
+#if defined(__APPLE__)
+# include <sys/disk.h>
+#endif
+
 
 #ifdef HAS_BLKID
 #include <blkid/blkid.h>
@@ -284,7 +303,16 @@ void check_if_block_device(t_abootimg* img)
       abort_perror(img->fname);
     
     unsigned long long bsize = 0;
+# if defined(__FreeBSD__) || defined(__FreeBSD_kernel__)
+    if (ioctl(fd, DIOCGMEDIASIZE, &bsize))
+# elif defined(__APPLE__)
+    if (ioctl(fd, DKIOCGETBLOCKCOUNT, &bsize))
+# elif defined(__NetBSD__)
+//    if (ioctl(fd, DIOCGDINFO, &label) == -1)
+    if (1) //does a suitable ioctl exist?
+# else
     if (ioctl(fd, BLKGETSIZE64, &bsize))
+# endif
       abort_perror(img->fname);
     img->size = bsize;
 
@@ -320,7 +348,17 @@ void read_header(t_abootimg* img)
 
   if (S_ISBLK(s.st_mode)) {
     unsigned long long bsize = 0;
+
+# if defined(__FreeBSD__) || defined(__FreeBSD_kernel__)
+    if (ioctl(fd, DIOCGMEDIASIZE, &bsize))
+# elif defined(__APPLE__)
+    if (ioctl(fd, DKIOCGETBLOCKCOUNT, &bsize))
+# elif defined(__NetBSD__)
+//    if (ioctl(fd, DIOCGDINFO, &label) == -1)
+    if (1) //does a suitable ioctl exist?
+# else
     if (ioctl(fd, BLKGETSIZE64, &bsize))
+# endif
       abort_perror(img->fname);
     img->size = bsize;
     img->is_blkdev = 1;
