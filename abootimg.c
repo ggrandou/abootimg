@@ -107,6 +107,22 @@ void abort_printf(char *fmt, ...)
 }
 
 
+int blkgetsize(int fd, unsigned long long *bsize)
+{
+# if defined(__FreeBSD__) || defined(__FreeBSD_kernel__)
+  return ioctl(fd, DIOCGMEDIASIZE, &bsize);
+# elif defined(__APPLE__)
+  return ioctl(fd, DKIOCGETBLOCKCOUNT, &bsize);
+# elif defined(__NetBSD__)
+  // does a suitable ioctl exist?
+  // return (ioctl(fd, DIOCGDINFO, &label) == -1);
+  return 1
+# else
+  return ioctl(fd, BLKGETSIZE64, &bsize);
+# endif
+
+}
+
 void print_usage(void)
 {
   printf (
@@ -303,16 +319,7 @@ void check_if_block_device(t_abootimg* img)
       abort_perror(img->fname);
     
     unsigned long long bsize = 0;
-# if defined(__FreeBSD__) || defined(__FreeBSD_kernel__)
-    if (ioctl(fd, DIOCGMEDIASIZE, &bsize))
-# elif defined(__APPLE__)
-    if (ioctl(fd, DKIOCGETBLOCKCOUNT, &bsize))
-# elif defined(__NetBSD__)
-//    if (ioctl(fd, DIOCGDINFO, &label) == -1)
-    if (1) //does a suitable ioctl exist?
-# else
-    if (ioctl(fd, BLKGETSIZE64, &bsize))
-# endif
+    if (blkgetsize(fd, &bsize))
       abort_perror(img->fname);
     img->size = bsize;
 
@@ -349,16 +356,7 @@ void read_header(t_abootimg* img)
   if (S_ISBLK(s.st_mode)) {
     unsigned long long bsize = 0;
 
-# if defined(__FreeBSD__) || defined(__FreeBSD_kernel__)
-    if (ioctl(fd, DIOCGMEDIASIZE, &bsize))
-# elif defined(__APPLE__)
-    if (ioctl(fd, DKIOCGETBLOCKCOUNT, &bsize))
-# elif defined(__NetBSD__)
-//    if (ioctl(fd, DIOCGDINFO, &label) == -1)
-    if (1) //does a suitable ioctl exist?
-# else
-    if (ioctl(fd, BLKGETSIZE64, &bsize))
-# endif
+    if (blkgetsize(fd, &bsize))
       abort_perror(img->fname);
     img->size = bsize;
     img->is_blkdev = 1;
