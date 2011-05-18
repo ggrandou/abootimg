@@ -1,5 +1,7 @@
-2011/05/04 - v0.5 - unreleased
+2011/05/18 - v0.5
 
+	* add support for freebsd, cygwin, and osx
+	* explains why sanity check has failed
 	* print version number in -help
 	* pack-initrd -f support
 
