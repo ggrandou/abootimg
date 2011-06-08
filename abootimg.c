@@ -801,7 +801,7 @@ void extract_ramdisk(t_abootimg* img)
 
   printf ("extracting ramdisk in %s\n", img->ramdisk_fname);
 
-  void* r = malloc(ksize);
+  void* r = malloc(rsize);
   if (!r) 
     abort_perror(NULL);
 
