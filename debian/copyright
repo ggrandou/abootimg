@@ -43,4 +43,5 @@ License:
 
 
 The Debian packaging is copyright 2011, Heiko Stuebner <mmind@debian.org> and
-is licensed under the GPL version 2, see `/usr/share/common-licenses/GPL-2'.
+is licensed under the GPL version 2, or (at your option) any later version,
+see `/usr/share/common-licenses/GPL-2'.

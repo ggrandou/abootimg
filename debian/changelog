@@ -1,3 +1,11 @@
+abootimg (0.5+git20110609-1) unstable; urgency=low
+
+  * New upstream release (Closes: #631719)
+  * Relax packaging license (Closes: #631720)
+  * Install helper scripts for initramfs handling
+
+ -- Heiko Stuebner <mmind@debian.org>  Sat, 02 Jul 2011 12:46:35 +0200
+
 abootimg (0.3-1) unstable; urgency=low
 
   * Initial release (Closes: #612096)
