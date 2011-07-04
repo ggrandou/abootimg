@@ -42,7 +42,7 @@
 #endif
 
 #if defined(__APPLE__)
-# include <sys/disk.h>
+# include <sys/disk.h> /* DKIOCGETBLOCKCOUNT */
 #endif
 
 
@@ -116,9 +116,14 @@ int blkgetsize(int fd, unsigned long long *bsize)
 # elif defined(__NetBSD__)
   // does a suitable ioctl exist?
   // return (ioctl(fd, DIOCGDINFO, &label) == -1);
-  return 1
-# else
+  return 1;
+# elif defined(__linux__) || defined(__CYGWIN__)
   return ioctl(fd, BLKGETSIZE64, &bsize);
+# elif defined(__GNU__)
+  // does a suitable ioctl for HURD exist?
+  return 1;
+# else
+  return 1;
 # endif
 
 }
