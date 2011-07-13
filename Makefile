@@ -1,4 +1,8 @@
 
+CPPFLAGS=-DHAS_BLKID
+CFLAGS=-O3
+LDLIBS=-lblkid
+
 all: abootimg
 
 version.h:
@@ -10,14 +14,10 @@ version.h:
 	fi \
 	fi
 
-abootimg: abootimg.c bootimg.h version.h
-	gcc -g -O2 -Wno-unused-result -o abootimg abootimg.c -DHAS_BLKID -lblkid
+abootimg.o: bootimg.h version.h
 
 clean:
-	rm -f abootimg version.h
+	rm -f abootimg *.o version.h
 
-archive: clean
-	cd ..; tar cvzf abootimg.tar.gz abootimg --exclude tests --exclude tmp\* --exclude .git
-
-.PHONY:	clean archive all
+.PHONY:	clean all
 
