@@ -356,9 +356,8 @@ void open_bootimg(t_abootimg* img, char* mode)
 
 void read_header(t_abootimg* img)
 {
-
-  fread(&img->header, sizeof(boot_img_hdr), 1, img->stream);
-  if (ferror(img->stream))
+  size_t rb = fread(&img->header, sizeof(boot_img_hdr), 1, img->stream);
+  if ((rb!=1) || ferror(img->stream))
     abort_perror(img->fname);
   else if (feof(img->stream))
     abort_printf("%s: cannot read image header\n", img->fname);
@@ -531,8 +530,8 @@ void update_images(t_abootimg *img)
     char* k = malloc(ksize);
     if (!k)
       abort_perror("");
-    fread(k, 1, ksize, stream);
-    if (ferror(stream))
+    size_t rb = fread(k, ksize, 1, stream);
+    if ((rb!=1) || ferror(stream))
       abort_perror(img->kernel_fname);
     else if (feof(stream))
       abort_printf("%s: cannot read kernel\n", img->kernel_fname);
@@ -553,8 +552,8 @@ void update_images(t_abootimg *img)
     char* r = malloc(rsize);
     if (!r)
       abort_perror("");
-    fread(r, 1, rsize, stream);
-    if (ferror(stream))
+    size_t rb = fread(r, rsize, 1, stream);
+    if ((rb!=1) || ferror(stream))
       abort_perror(img->ramdisk_fname);
     else if (feof(stream))
       abort_printf("%s: cannot read ramdisk\n", img->ramdisk_fname);
@@ -569,8 +568,8 @@ void update_images(t_abootimg *img)
       abort_perror("");
     if (fseek(img->stream, roffset, SEEK_SET))
       abort_perror(img->fname);
-    fread(r, 1, rsize, img->stream);
-    if (ferror(img->stream))
+    size_t rb = fread(r, rsize, 1, img->stream);
+    if ((rb!=1) || ferror(img->stream))
       abort_perror(img->fname);
     else if (feof(img->stream))
       abort_printf("%s: cannot read ramdisk\n", img->fname);
@@ -589,8 +588,8 @@ void update_images(t_abootimg *img)
     char* s = malloc(ssize);
     if (!s)
       abort_perror("");
-    fread(s, 1, ssize, stream);
-    if (ferror(stream))
+    size_t rb = fread(s, ssize, 1, stream);
+    if ((rb!=1) || ferror(stream))
       abort_perror(img->second_fname);
     else if (feof(stream))
       abort_printf("%s: cannot read second stage\n", img->second_fname);
@@ -605,8 +604,8 @@ void update_images(t_abootimg *img)
       abort_perror("");
     if (fseek(img->stream, soffset, SEEK_SET))
       abort_perror(img->fname);
-    fread(s, 1, ssize, img->stream);
-    if (ferror(img->stream))
+    size_t rb = fread(s, ssize, 1, img->stream);
+    if ((rb!=1) || ferror(img->stream))
       abort_perror(img->fname);
     else if (feof(img->stream))
       abort_printf("%s: cannot read second stage\n", img->fname);
@@ -651,16 +650,16 @@ void write_bootimg(t_abootimg* img)
   if (ferror(img->stream))
     abort_perror(img->fname);
 
-  fwrite(padding, 1, psize - sizeof(img->header), img->stream);
+  fwrite(padding, psize - sizeof(img->header), 1, img->stream);
   if (ferror(img->stream))
     abort_perror(img->fname);
 
   if (img->kernel) {
-    fwrite(img->kernel, 1, img->header.kernel_size, img->stream);
+    fwrite(img->kernel, img->header.kernel_size, 1, img->stream);
     if (ferror(img->stream))
       abort_perror(img->fname);
 
-    fwrite(padding, 1, psize - (img->header.kernel_size % psize), img->stream);
+    fwrite(padding, psize - (img->header.kernel_size % psize), 1, img->stream);
     if (ferror(img->stream))
       abort_perror(img->fname);
   }
@@ -669,11 +668,11 @@ void write_bootimg(t_abootimg* img)
     if (fseek(img->stream, (1+n)*psize, SEEK_SET))
       abort_perror(img->fname);
 
-    fwrite(img->ramdisk, 1, img->header.ramdisk_size, img->stream);
+    fwrite(img->ramdisk, img->header.ramdisk_size, 1, img->stream);
     if (ferror(img->stream))
       abort_perror(img->fname);
 
-    fwrite(padding, 1, psize - (img->header.ramdisk_size % psize), img->stream);
+    fwrite(padding, psize - (img->header.ramdisk_size % psize), 1, img->stream);
     if (ferror(img->stream))
       abort_perror(img->fname);
   }
@@ -682,11 +681,11 @@ void write_bootimg(t_abootimg* img)
     if (fseek(img->stream, (1+n+m)*psize, SEEK_SET))
       abort_perror(img->fname);
 
-    fwrite(img->second, 1, img->header.second_size, img->stream);
+    fwrite(img->second, img->header.second_size, 1, img->stream);
     if (ferror(img->stream))
       abort_perror(img->fname);
 
-    fwrite(padding, 1, psize - (img->header.second_size % psize), img->stream);
+    fwrite(padding, psize - (img->header.second_size % psize), 1, img->stream);
     if (ferror(img->stream))
       abort_perror(img->fname);
   }
@@ -777,8 +776,8 @@ void extract_kernel(t_abootimg* img)
   if (fseek(img->stream, psize, SEEK_SET))
     abort_perror(img->fname);
 
-  fread(k, ksize, 1, img->stream);
-  if (ferror(img->stream))
+  size_t rb = fread(k, ksize, 1, img->stream);
+  if ((rb!=1) || ferror(img->stream))
     abort_perror(img->fname);
  
   FILE* kernel_file = fopen(img->kernel_fname, "w");
@@ -813,8 +812,8 @@ void extract_ramdisk(t_abootimg* img)
   if (fseek(img->stream, roffset, SEEK_SET))
     abort_perror(img->fname);
 
-  fread(r, rsize, 1, img->stream);
-  if (ferror(img->stream))
+  size_t rb = fread(r, rsize, 1, img->stream);
+  if ((rb!=1) || ferror(img->stream))
     abort_perror(img->fname);
  
   FILE* ramdisk_file = fopen(img->ramdisk_fname, "w");
@@ -853,8 +852,8 @@ void extract_second(t_abootimg* img)
   if (fseek(img->stream, soffset, SEEK_SET))
     abort_perror(img->fname);
 
-  fread(s, ssize, 1, img->stream);
-  if (ferror(img->stream))
+  size_t rb = fread(s, ssize, 1, img->stream);
+  if ((rb!=1) || ferror(img->stream))
     abort_perror(img->fname);
  
   FILE* second_file = fopen(img->second_fname, "w");
