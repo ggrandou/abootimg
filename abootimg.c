@@ -107,18 +107,18 @@ void abort_printf(char *fmt, ...)
 }
 
 
-int blkgetsize(int fd, unsigned long long *bsize)
+int blkgetsize(int fd, unsigned long long *pbsize)
 {
 # if defined(__FreeBSD__) || defined(__FreeBSD_kernel__)
-  return ioctl(fd, DIOCGMEDIASIZE, &bsize);
+  return ioctl(fd, DIOCGMEDIASIZE, pbsize);
 # elif defined(__APPLE__)
-  return ioctl(fd, DKIOCGETBLOCKCOUNT, &bsize);
+  return ioctl(fd, DKIOCGETBLOCKCOUNT, pbsize);
 # elif defined(__NetBSD__)
   // does a suitable ioctl exist?
   // return (ioctl(fd, DIOCGDINFO, &label) == -1);
   return 1;
 # elif defined(__linux__) || defined(__CYGWIN__)
-  return ioctl(fd, BLKGETSIZE64, &bsize);
+  return ioctl(fd, BLKGETSIZE64, pbsize);
 # elif defined(__GNU__)
   // does a suitable ioctl for HURD exist?
   return 1;
