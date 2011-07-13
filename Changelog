@@ -1,3 +1,10 @@
+2011/07/14 - v0.6
+
+	* fixes block device support, broken in v0.5
+	* fixes crash if ramdisk is bigger than kernel
+	* version.h no longer relies on git
+	* build fix on GNU Hurd
+
 2011/05/18 - v0.5
 
 	* add support for freebsd, cygwin, and osx
