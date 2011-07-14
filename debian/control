@@ -3,7 +3,7 @@ Section: admin
 Priority: extra
 Maintainer: Heiko Stuebner <mmind@debian.org>
 Build-Depends: debhelper (>= 7), cdbs (>= 0.4.49), libblkid-dev
-Standards-Version: 3.9.1
+Standards-Version: 3.9.2
 Homepage: http://gitorious.org/ac100/abootimg
 
 Package: abootimg
