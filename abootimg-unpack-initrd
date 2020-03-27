@@ -16,5 +16,5 @@ fi
 
 mkdir -p $ramdisk
 
-zcat $initrd | ( cd $ramdisk; cpio -i )
+zcat $initrd | ( cd $ramdisk; cpio -i --no-absolute-filenames)
 
