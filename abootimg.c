@@ -848,7 +848,7 @@ void extract_second(t_abootimg* img)
 
   printf ("extracting second stage image in %s\n", img->second_fname);
 
-  void* s = malloc(ksize);
+  void* s = malloc(ssize);
   if (!s)
     abort_perror(NULL);
 
