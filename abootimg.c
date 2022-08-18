@@ -848,8 +848,9 @@ void extract_second(t_abootimg* img)
   if (!ssize) // Second Stage not present
     return;
 
-  unsigned n = (rsize + ksize + psize - 1) / psize;
-  unsigned soffset = (1+n)*psize;
+  unsigned n = (ksize + psize - 1) / psize;
+  unsigned m = (rsize + psize - 1) / psize;
+  unsigned soffset = (1+n+m)*psize;
 
   printf ("extracting second stage image in %s\n", img->second_fname);
 
