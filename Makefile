@@ -16,6 +16,9 @@ version.h:
 
 abootimg.o: bootimg.h version.h
 
+check: abootimg
+	./test.sh
+
 clean:
 	rm -f abootimg *.o version.h
 
