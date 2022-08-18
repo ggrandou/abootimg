@@ -320,11 +320,16 @@ void check_if_block_device(t_abootimg* img)
 {
   struct stat st;
 
-  if (stat(img->fname, &st))
-    if (errno != ENOENT) {
+  if (stat(img->fname, &st)) {
+    if (errno == ENOENT) {
+      return;
+    }
+    else {
       printf("errno=%d\n", errno);
       abort_perror(img->fname);
     }
+  }
+
 
 #ifdef HAS_BLKID
   if (S_ISBLK(st.st_mode)) {
